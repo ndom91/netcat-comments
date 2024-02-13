@@ -4,6 +4,8 @@ export const Actions = {
   SIGN_IN: "SIGN_IN",
   WHOAMI: "WHOAMI",
   SIGN_OUT: "SIGN_OUT",
+  CREATE_DISCUSSION: "CREATE_DISCUSSION",
+  CREATE_REPLY: "CREATE_REPLY",
 } as const;
 
 export const requestBodySchema = v.object({
