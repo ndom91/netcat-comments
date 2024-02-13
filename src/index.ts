@@ -2,26 +2,18 @@ import net from "node:net";
 import { ValiError } from "valibot";
 import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
-import { buildRequestObject, validateBody } from "./utils";
+import { NetcatAuthentication } from "./utils";
 
 const server = net.createServer((socket) => {
+  const auth = new NetcatAuthentication()
   pipeline(
     socket,
     async function*(source) {
       for await (const chunk of source) {
         try {
-          const messages = Buffer.from(chunk).toString().split('\n').filter(Boolean)
-          const parsedMessages = messages.map(msg => {
-            const rawBodyObject = buildRequestObject(msg)
-            const body = validateBody(rawBodyObject)
-            return body
-          })
-
-          let response = parsedMessages[0].requestId
-          if (parsedMessages[0].data) {
-            response += `|${parsedMessages[0].data}`
-          }
-
+          const msg = Buffer.from(chunk).toString().replace('\n', '')
+          const parsedMessage = auth.parseMessage(msg)
+          const response = auth.handleAction(parsedMessage)
           yield `${response}\n`
         } catch (e) {
           if (e instanceof ValiError) {
@@ -34,4 +26,4 @@ const server = net.createServer((socket) => {
   )
 });
 
-server.listen(1337, "127.0.0.1");
+server.listen(5000, "127.0.0.1");
