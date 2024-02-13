@@ -7,14 +7,21 @@ const server = net.createServer((socket: Socket) => {
   socket
     .on('data', (chunk: Buffer | string) => {
       try {
-        const bodyString = Buffer.from(chunk).toString()
-        const rawBodyObject = buildRequestObject(bodyString)
-        const body = validateBody(rawBodyObject)
+        const messages = Buffer.from(chunk).toString().split('\n').filter(Boolean)
+        console.log('\n\nbodyString', messages)
+        const parsedMessages = messages.map(msg => {
+          const rawBodyObject = buildRequestObject(msg)
+          console.log('\n\nrawBodyObject', rawBodyObject)
+          const body = validateBody(rawBodyObject)
+          console.log('\n\nbody', body)
+          return body
+        })
 
-        console.log('body', body)
+        console.log('parsedMessages', parsedMessages)
       } catch (e) {
         if (e instanceof ValiError) {
-          const issuesResponse = e.issues.map(issue => issue.message).join(', ')
+          console.log(e)
+          const issuesResponse = e.issues.map(issue => `Input "${issue.input}" invalid: ${issue.message}`).join('\n')
           console.log(issuesResponse)
         }
       }

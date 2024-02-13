@@ -20,17 +20,11 @@ const requestBodySchema = v.object({
 });
 
 export const validateBody = (body: typeof defaultBody) => {
-  console.log("INPUT BODY", body);
-  // try {
   return v.parse(requestBodySchema, body);
-  // } catch (e) {
-  //   console.log(e);
-  // }
 };
 
 export const buildRequestObject = (bodyString: string) => {
-  return bodyString.split("|").reduce((acc, rawSegment, i) => {
-    const segment = rawSegment.replace("\n", "");
+  return bodyString.split("|").reduce((acc, segment, i) => {
     if (!Object.values(acc).includes(segment)) {
       if (i === 0) acc.requestId = segment;
       if (i === 1) {
@@ -43,5 +37,5 @@ export const buildRequestObject = (bodyString: string) => {
       if (i === 2) acc.data = segment;
     }
     return acc;
-  }, defaultBody);
+  }, structuredClone(defaultBody));
 };
