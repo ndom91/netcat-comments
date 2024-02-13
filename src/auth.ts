@@ -1,17 +1,13 @@
 import { Actions } from "./types"
-import type { MessageBody, Message } from "./types"
-
-export const defaultBody = {
-  requestId: "",
-  action: "SIGN_IN",
-  data: "",
-} as MessageBody
+import { MemoryDatabase } from "./db"
+import type { Message } from "./types"
 
 export class NetcatAuthentication {
-  #sessions: Map<string, string>;
+  #db: typeof MemoryDatabase.prototype
 
   constructor() {
-    this.#sessions = new Map();
+    const db = new MemoryDatabase()
+    this.#db = db
   }
 
   handleAction(parsedMessage: Message) {
@@ -28,17 +24,17 @@ export class NetcatAuthentication {
   }
 
   signIn(msg: Message) {
-    this.#sessions.set(msg.key, JSON.stringify(msg.data))
+    this.#db.insert(msg.key, JSON.stringify(msg.data))
     return msg.data.requestId
   }
 
   signOut(msg: Message) {
-    this.#sessions.delete(msg.key)
+    this.#db.delete(msg.key)
     return msg.data.requestId
   }
 
   whoami(msg: Message): string | undefined {
-    const savedSession = this.#sessions.get(msg.key)
+    const savedSession = this.#db.get(msg.key)
     if (!savedSession) {
       return undefined
     }
