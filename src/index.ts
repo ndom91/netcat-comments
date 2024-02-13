@@ -6,7 +6,7 @@ import { NetcatAuthentication } from "./auth";
 import { parseAuthMessage } from "./utils";
 import { Logger, loggerLevels } from "./logger";
 
-const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
+const logger = new Logger({ level: loggerLevels.DEBUG })
 
 const server = net.createServer((socket) => {
   const auth = new NetcatAuthentication()

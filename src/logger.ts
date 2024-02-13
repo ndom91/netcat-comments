@@ -18,18 +18,28 @@ type LoggerLevel = typeof loggerLevels[keyof typeof loggerLevels]
 
 export class Logger {
   #logLevel: LoggerLevel = loggerLevels.LOG
-  #prefix: string = chalk.dim("COMM")
+  #prefix: string
 
-  constructor({ level, prefix }: { level: LoggerLevel, prefix: string }) {
+  constructor({ level, prefix }: { level: LoggerLevel, prefix?: string }) {
     this.#logLevel = level
-    this.#prefix = prefix
+    this.#prefix = chalk.dim(prefix ?? "COMM")
   }
 
-  printf(level: keyof typeof loggerLevels, ...msg: string[]) {
+  printf(level: keyof typeof loggerLevels, ...msgs: string[]) {
     const coloredLevelString = chalk[loggerLevelColors[level]](level.toUpperCase())
     const method = level.toLowerCase() as Lowercase<keyof typeof loggerLevels>
 
-    console[method](`> ${coloredLevelString} [${chalk.dim(this.#prefix)}]: ${msg.join(" ")}`)
+    // Allow passing objects to log
+    let outputMsg = []
+    for (const msg of msgs) {
+      if (typeof msg === "object") {
+        outputMsg.push(JSON.stringify(msg, null, 2))
+      } else if (typeof msg === 'string') {
+        outputMsg.push(msg)
+      }
+    }
+
+    console[method](`> ${coloredLevelString} [${chalk.dim(this.#prefix)}]: ${outputMsg.join(" ")}`)
   }
 
   log(...msg: string[]) {
