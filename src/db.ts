@@ -1,21 +1,35 @@
-export class MemoryDatabase {
-  #data: Map<string, string>;
+import { Table } from "./types"
 
+let data: Record<string, Map<string, string>> | null = null
+let instance: typeof MemoryDatabase.prototype
+
+type Table = keyof typeof Table
+
+export class MemoryDatabase {
   constructor() {
-    this.#data = new Map();
+    if (instance) {
+      throw new Error("Cannot create multiple instances of MemoryDatabase")
+    }
+    data = {
+      [Table.AUTH]: new Map(),
+      [Table.DISCUSSION]: new Map()
+    }
+    instance = this
   }
-  insert(key: string, value: string) {
-    this.#data.set(key, value);
+  insert(table: Table, { key, value }: { key: string, value: string }) {
+    data?.[table].set(key, value);
     return key
   }
-  get(key: string) {
-    return this.#data.get(key);
+  get(table: Table, { key }: { key: string }) {
+    return data?.[table].get(key);
   }
-  delete(key: string) {
-    this.#data.delete(key);
+  delete(table: Table, { key }: { key: string }) {
+    data?.[table].delete(key);
   }
-  update(key: string, value: string) {
-    this.#data.set(key, value);
+  update(table: Table, { key, value }: { key: string, value: string }) {
+    data?.[table].set(key, value);
     return key
   }
 }
+
+export const db = Object.freeze(new MemoryDatabase())

@@ -21,3 +21,8 @@ export type ParsedAuthBody = {
   key: string,
   data: MessageBody
 }
+
+export const Table = {
+  AUTH: "AUTH",
+  DISCUSSION: "DISCUSSION"
+} as const

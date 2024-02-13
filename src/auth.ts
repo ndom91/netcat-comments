@@ -1,14 +1,12 @@
-import { Actions } from "./types"
-import { MemoryDatabase } from "./db"
+import { Actions, Table } from "./types"
+import { db } from "./db"
 import type { Message } from "./types"
+import { Logger, loggerLevels } from "./logger";
+
+const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 
 export class NetcatAuthentication {
-  #db: typeof MemoryDatabase.prototype
-
-  constructor() {
-    const db = new MemoryDatabase()
-    this.#db = db
-  }
+  #db: typeof db = db
 
   handleAction(parsedMessage: Message) {
     switch (parsedMessage.data.action) {
@@ -24,22 +22,22 @@ export class NetcatAuthentication {
   }
 
   signIn(msg: Message) {
-    this.#db.insert(msg.key, JSON.stringify(msg.data))
+    this.#db.insert(Table.AUTH, { key: msg.key, value: JSON.stringify(msg.data) })
     return msg.data.requestId
   }
 
   signOut(msg: Message) {
-    this.#db.delete(msg.key)
+    this.#db.delete(Table.AUTH, { key: msg.key })
     return msg.data.requestId
   }
 
   whoami(msg: Message): string | undefined {
-    const savedSession = this.#db.get(msg.key)
+    const savedSession = this.#db.get(Table.AUTH, { key: msg.key })
     if (!savedSession) {
       return undefined
     }
     const savedMsg = JSON.parse(savedSession)
-    console.log('savedSession.msg', savedMsg)
+    logger.debug('savedSession.msg', savedMsg)
     return `${msg.data.requestId}|${savedMsg?.data}`
   }
 }
