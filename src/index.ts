@@ -4,6 +4,9 @@ import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
 import { NetcatAuthentication } from "./auth";
 import { parseAuthMessage } from "./utils";
+import { Logger, loggerLevels } from "./logger";
+
+const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 
 const server = net.createServer((socket) => {
   const auth = new NetcatAuthentication()
@@ -11,7 +14,7 @@ const server = net.createServer((socket) => {
     socket,
     async function*(source) {
       const ip = source.remoteAddress
-      console.log('sourceIp', ip)
+      logger.debug('sourceIp', ip!)
       for await (const chunk of source) {
         try {
           const msg = Buffer.from(chunk).toString().replace('\n', '')
