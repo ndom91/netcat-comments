@@ -1,13 +1,9 @@
 import { Actions } from "./types"
-import { MemoryDatabase } from "./db"
+import { db } from "./db"
 import type { Message } from "./types"
 
-export class NetcatDiscussions {
-  #db: typeof MemoryDatabase.prototype
-
-  constructor() {
-    this.#db = new MemoryDatabase()
-  }
+export class NetcatDiscussion {
+  #db: typeof db = db
 
   handleAction(parsedMessage: Message) {
     switch (parsedMessage.data.action) {
@@ -21,6 +17,7 @@ export class NetcatDiscussions {
   }
 
   createDiscussion(msg: Message) {
+    this.#db.insert("DISCUSSION", { key: msg.key, value: JSON.stringify(msg.data) })
   }
 
   createReply(msg: Message) {

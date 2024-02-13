@@ -3,13 +3,16 @@ import { ValiError } from "valibot";
 import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
 import { NetcatAuthentication } from "./auth";
-import { parseAuthMessage } from "./utils";
+import { NetcatDiscussion } from "./discussion";
+import { parseMessage } from "./utils";
 import { Logger, loggerLevels } from "./logger";
 
 const logger = new Logger({ level: loggerLevels.DEBUG })
 
 const server = net.createServer((socket) => {
   const auth = new NetcatAuthentication()
+  const discussion = new NetcatDiscussion()
+
   pipeline(
     socket,
     async function*(source) {
@@ -18,8 +21,14 @@ const server = net.createServer((socket) => {
       for await (const chunk of source) {
         try {
           const msg = Buffer.from(chunk).toString().replace('\n', '')
-          const parsedMessage = parseAuthMessage(ip!, msg)
-          const response = auth.handleAction(parsedMessage)
+          const parsedMessage = parseMessage(ip!, msg)
+
+          let response
+          if (parsedMessage.type === 'AUTH') {
+            response = auth.handleAction(parsedMessage)
+          } else if (parsedMessage.type === 'DISCUSSION') {
+            response = discussion.handleAction(parsedMessage)
+          }
           yield `${response}\n`
         } catch (e) {
           if (e instanceof ValiError) {
