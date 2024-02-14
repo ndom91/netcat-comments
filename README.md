@@ -1,4 +1,4 @@
-<img align="right" width="300px" src="netcat-logo.svg" alt="Netcat Comments Logo" />
+<img align="right" width="300px" src="netcat_logo.svg" alt="Netcat Comments Logo" />
 
 # Netcat Comments
 
