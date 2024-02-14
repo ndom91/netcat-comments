@@ -30,6 +30,10 @@ export class Authentication {
   }
 
   signOut(msg: Message) {
+    const savedSession = this.#db.get(Table.AUTH, { key: msg.key })
+    if (!savedSession) {
+      return 'No session found.'
+    }
     this.#db.delete(Table.AUTH, { key: msg.key })
     return msg.data.requestId
   }
@@ -37,10 +41,9 @@ export class Authentication {
   whoami(msg: Message): string | undefined {
     const savedSession = this.#db.get(Table.AUTH, { key: msg.key })
     if (!savedSession) {
-      return undefined
+      return 'No session found.'
     }
     const savedMsg = JSON.parse(savedSession)
-    logger.debug('savedSession.msg', savedMsg)
     return `${msg.data.requestId}|${savedMsg?.data}`
   }
 }

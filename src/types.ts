@@ -18,7 +18,7 @@ export const Table = {
 
 const ActionSchemas = {
   [Actions.SIGN_IN]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
-  [Actions.SIGN_OUT]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
+  [Actions.SIGN_OUT]: v.array(v.null_('No data'), [v.maxLength(0)]),
   [Actions.CREATE_DISCUSSION]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.LIST_DISCUSSIONS]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.GET_DISCUSSION]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
