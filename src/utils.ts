@@ -1,14 +1,15 @@
 import * as v from "valibot";
 import { createHash } from "node:crypto";
-import { Table, Actions, requestBodySchema } from "./types"
+import { ParsedBody, Table, Actions, RequestBodySchema } from "./types"
 
-export const validateBody = (body: { requestId: string, action: string, data: string }) => {
-  return v.parse(requestBodySchema, body);
+export const validateBody = (body: { requestId: string, action: string, data: string[] }) => {
+  return v.parse(RequestBodySchema, body);
 };
 
 const getMessageType = (action: keyof typeof Actions) => {
   const authActions = [Actions.SIGN_IN, Actions.SIGN_OUT, Actions.WHOAMI];
-  const discussionActions = [Actions.CREATE_DISCUSSION, Actions.CREATE_REPLY];
+  const discussionActions = [Actions.CREATE_DISCUSSION, Actions.GET_DISCUSSION]
+  const commentActions = [Actions.CREATE_REPLY];
 
   // check if action is part of either group
   // @ts-expect-error needs to be clarified
@@ -17,37 +18,42 @@ const getMessageType = (action: keyof typeof Actions) => {
     // @ts-expect-error needs to be clarified
   } else if (discussionActions.includes(action)) {
     return Table.DISCUSSION;
+    // @ts-expect-error needs to be clarified
+  } else if (commentActions.includes(action)) {
+    return Table.COMMENT;
   }
 }
 
-export const parseMessage = (ip: string, bodyString: string) => {
-  const rawBody = bodyString.split("|").reduce((acc, segment, i) => {
-    if (!Object.values(acc).includes(segment)) {
-      // TODO parse Discussion messages
-      if (i === 0) acc.requestId = segment;
+/**
+ * Parse message from client for the first time
+ * Extract initial important fields like requestId and actionId
+ * and push the rest of the data into an array for later consumption.
+ */
+export const parseMessage = (ip: string, bodyString: string): ParsedBody => {
+  const rawBody = bodyString.split("|").reduce((body, segment, i) => {
+    if (!Object.values(body).includes(segment)) {
+      if (i === 0) body.requestId = segment;
       if (i === 1) {
-        if (Object.keys(Actions).includes(segment)) {
-          acc.action = segment as keyof typeof Actions
-        } else if (acc.action === Actions.WHOAMI) {
-          acc.data = segment;
-        }
+        body.action = segment as keyof typeof Actions
+        body.type = getMessageType(segment as keyof typeof Actions)!
       }
-      if (i === 2) {
-        acc.data = segment;
+      if (i >= 2) {
+        (body.data as string[]).push(segment)
       }
     }
-    return acc;
+    return body;
   }, {
     requestId: "",
     action: "",
-    data: "",
-  });
+    data: [],
+    type: "",
+  })
 
   const parsedBody = validateBody(rawBody)
 
   return {
     key: createHash('sha256').update(ip).digest('hex'),
-    type: getMessageType(parsedBody.action!),
+    type: parsedBody.type,
     data: parsedBody
   }
 }

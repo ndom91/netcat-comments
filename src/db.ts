@@ -12,7 +12,8 @@ export class MemoryDatabase {
     }
     data = {
       [Table.AUTH]: new Map(),
-      [Table.DISCUSSION]: new Map()
+      [Table.DISCUSSION]: new Map(),
+      [Table.COMMENT]: new Map()
     }
     instance = this
   }

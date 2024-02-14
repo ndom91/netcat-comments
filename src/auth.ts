@@ -5,12 +5,13 @@ import { Logger, loggerLevels } from "./logger";
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 
-export class NetcatAuthentication {
+export class Authentication {
   #db: typeof db = db
 
   handleAction(parsedMessage: Message) {
     switch (parsedMessage.data.action) {
       case Actions.SIGN_IN:
+        logger.debug('user.signIn', parsedMessage.data?.data?.[0]!)
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
         return this.signOut(parsedMessage);
