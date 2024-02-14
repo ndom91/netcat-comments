@@ -6,6 +6,7 @@ export const Actions = {
   SIGN_OUT: "SIGN_OUT",
   CREATE_DISCUSSION: "CREATE_DISCUSSION",
   CREATE_REPLY: "CREATE_REPLY",
+  LIST_DISCUSSIONS: "LIST_DISCUSSIONS",
   GET_DISCUSSION: "GET_DISCUSSION",
 } as const;
 
@@ -19,6 +20,7 @@ const ActionSchemas = {
   [Actions.SIGN_IN]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.SIGN_OUT]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.CREATE_DISCUSSION]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
+  [Actions.LIST_DISCUSSIONS]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.GET_DISCUSSION]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.CREATE_REPLY]: v.array(v.string([v.minLength(1)]), [v.minLength(1)]),
   [Actions.WHOAMI]: v.array(v.null_('No data'), [v.maxLength(0)])

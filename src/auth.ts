@@ -14,8 +14,10 @@ export class Authentication {
         logger.debug('user.signIn', parsedMessage.data?.data?.[0]!)
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
+        logger.debug('user.signOut', parsedMessage.data?.data?.[0]!)
         return this.signOut(parsedMessage);
       case Actions.WHOAMI:
+        logger.debug('user.whoami', parsedMessage.data?.data?.[0]!)
         return this.whoami(parsedMessage);
       default:
         break;
