@@ -1,3 +1,5 @@
+<img align="right" width="300px" src="netcat_logo.svg" alt="Netcat Comments Logo" />
+
 # Netcat Comments
 
 ## 🏗️Setup
@@ -25,11 +27,11 @@ You'll then have a process listening on port `5000`
 $ nc localhost 5000
 ```
 
-In this netcat process you can then send and receive messages by simply entering your message and pressing <kbd>Enter</kbd>.
+In this netcat process you can then send and receive messages by entering your message and pressing <kbd>Enter</kbd>.
 
 ## 👷 Usage
 
-Interacting with the system takes the form of messages with the following syntax.
+Messages sent to the system have the following syntax.
 
 ```
 <requestId>|<command>|<payload>
@@ -37,7 +39,7 @@ Interacting with the system takes the form of messages with the following syntax
 
 - `requestId` - Unique 7 character string matching `/([a-zA-Z]{7})/`
 - `command` - One of the available [commands](#Commands)
-- `payload` - Is the command specific payload
+- `payload` - Command specific payload. If there are multiple fields, these will continue to be pipe (`|`) delimited.
 
 Example:
 
@@ -62,6 +64,8 @@ Signin with a supplied username as
 **Returns**
 - `requestId`
 
+---
+
 #### `SIGN_OUT` 
 Signout of supplied username 
 
@@ -70,6 +74,8 @@ Signout of supplied username
 
 **Returns**
 - `requestId`
+
+---
 
 #### `WHOAMI` 
 
@@ -80,6 +86,8 @@ Return current username
 
 **Returns**
 - Active `username`
+
+---
 
 #### `CREATE_DISCUSSION` 
 
@@ -92,6 +100,8 @@ Create a comment thread
 **Returns**
 - `<threadId>` - Discussion thread identifier
 
+---
+
 #### `GET_DISCUSSION`
 
 **Payload Arguments**
@@ -103,6 +113,8 @@ Create a comment thread
 - `<username>`
 - `<comment>`
 
+---
+
 #### `CREATE_REPLY`
 
 **Payload Arguments**
@@ -111,6 +123,8 @@ Create a comment thread
 
 **Returns**
 - `<requestId>`
+
+---
 
 #### `LIST_DISCUSSIONS`
 
