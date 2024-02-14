@@ -52,9 +52,9 @@ gfedcba|WHOAMI
 gfedcba|nico
 ```
 
-### Commands
+## ⚙️ Commands
 
-#### `SIGN_IN` 
+### `SIGN_IN` 
 
 Signin with a supplied username as 
 
@@ -66,7 +66,7 @@ Signin with a supplied username as
 
 ---
 
-#### `SIGN_OUT` 
+### `SIGN_OUT` 
 Signout of supplied username 
 
 **Payload Arguments**
@@ -77,7 +77,7 @@ Signout of supplied username
 
 ---
 
-#### `WHOAMI` 
+### `WHOAMI` 
 
 Return current username
 
@@ -89,7 +89,7 @@ Return current username
 
 ---
 
-#### `CREATE_DISCUSSION` 
+### `CREATE_DISCUSSION` 
 
 Create a comment thread
 
@@ -102,7 +102,7 @@ Create a comment thread
 
 ---
 
-#### `GET_DISCUSSION`
+### `GET_DISCUSSION`
 
 **Payload Arguments**
 - `<threadId>`
@@ -115,7 +115,7 @@ Create a comment thread
 
 ---
 
-#### `CREATE_REPLY`
+### `CREATE_REPLY`
 
 **Payload Arguments**
 - `<threadId>`
@@ -126,7 +126,7 @@ Create a comment thread
 
 ---
 
-#### `LIST_DISCUSSIONS`
+### `LIST_DISCUSSIONS`
 
 **Payload Arguments**
 - `<commentReferencePrefix>` - First part of the period delimited reference, such as `b3hsbdf`
