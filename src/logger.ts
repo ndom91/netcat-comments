@@ -39,7 +39,7 @@ export class Logger {
       }
     }
 
-    console[method](`> ${coloredLevelString} [${chalk.dim(this.#prefix)}]: ${outputMsg.join(" ")}`)
+    console[method === 'debug' ? 'log' : method](`> ${coloredLevelString} [${chalk.dim(this.#prefix)}]: ${outputMsg.join(" ")}`)
   }
 
   log(...msg: string[]) {
