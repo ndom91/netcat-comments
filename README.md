@@ -59,10 +59,10 @@ gfedcba|nico
 Signin with a supplied username as 
 
 **Payload Arguments**
-- `username`
+- `<username>`
 
 **Returns**
-- `requestId`
+- `<requestId>` - Request Id consisting of a 7-character lowercase string
 
 ---
 
@@ -70,10 +70,10 @@ Signin with a supplied username as
 Signout of supplied username 
 
 **Payload Arguments**
-- `username`
+- `<username>`
 
 **Returns**
-- `requestId`
+- `<requestId>` - Request Id consisting of a 7-character lowercase string
 
 ---
 
@@ -94,35 +94,35 @@ Return current username
 Create a comment thread
 
 **Payload Arguments**
-- `<commentReference>` - A period delimited alphanumeric string, such as `b3hsbdf.1m30s`
+- `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
 - `<comment>` - Comment body, a unicode string of unspecified length
 
 **Returns**
-- `<threadId>` - Discussion thread identifier
+- `<discussionId>` - Discussion thread identifier
 
 ---
 
 ### `GET_DISCUSSION`
 
 **Payload Arguments**
-- `<threadId>`
+- `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
 
 **Returns**
-- `<threadId>`
-- `<commentReference>`
-- `<username>`
-- `<comment>`
+- `<requestId>` - Request Id consisting of a 7-character lowercase string
+- `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
+- `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
+- `(<username>|<comment>)[]` - Array of all messages with `username` and `comment`
 
 ---
 
 ### `CREATE_REPLY`
 
 **Payload Arguments**
-- `<threadId>`
-- `<comment>`
+- `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
+- `<comment>` - Comment body
 
 **Returns**
-- `<requestId>`
+- `<requestId>` - Request Id consisting of a 7-character lowercase string
 
 ---
 
@@ -132,7 +132,10 @@ Create a comment thread
 - `<commentReferencePrefix>` - First part of the period delimited reference, such as `b3hsbdf`
 
 **Returns**
-- `<requestId>`
+- `<requestId>` - Request Id consisting of a 7-character lowercase string
+- `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
+- `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
+- `(<username>|<comment>)[]` - Array of all messages with `username` and `comment`
 
 ## 📝 License
 
