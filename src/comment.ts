@@ -1,9 +1,8 @@
-import { db } from "./db"
-import { Actions } from "./types"
-import { Logger, loggerLevels } from "./logger";
+import { db } from "./lib/db"
+import { Logger, loggerLevels } from "./lib/logger";
 import { Authentication } from "./auth";
-import { generateId } from "./utils";
-import { type Message, Table } from "./types"
+import { generateId } from "./lib/utils";
+import { type Message, Table, Actions } from "./lib/types"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "DISC" })
 const auth = new Authentication()

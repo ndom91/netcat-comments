@@ -1,7 +1,6 @@
-import { db } from "./db"
-import { Actions, Table } from "./types"
-import { Logger, loggerLevels } from "./logger";
-import type { Message } from "./types"
+import { db } from "./lib/db"
+import { Actions, Table, type Message } from "./lib/types"
+import { Logger, loggerLevels } from "./lib/logger";
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 

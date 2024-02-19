@@ -1,13 +1,13 @@
 import net from "node:net";
 import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
-
-import { Table } from "./types";
-import { Comment } from "./comment";
 import { ValiError } from "valibot";
-import { parseMessage } from "./utils";
+
+import { Table } from "./lib/types";
+import { Comment } from "./comment";
+import { parseMessage } from "./lib/utils";
 import { Authentication } from "./auth";
-import { Logger, loggerLevels } from "./logger";
+import { Logger, loggerLevels } from "./lib/logger";
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "SERV" })
 
