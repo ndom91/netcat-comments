@@ -41,7 +41,7 @@ Messages sent to the system have the following syntax.
 - `command` - One of the available [commands](#%EF%B8%8F-commands)
 - `payload` - Command specific payload. If there are multiple fields, these will continue to be pipe (`|`) delimited.
 
-Example:
+**Example**
 
 ```bash
 > nc localhost 5000
@@ -64,6 +64,12 @@ Signin with a supplied username as
 **Returns**
 - `<requestId>` - Request Id consisting of a 7-character lowercase string
 
+**Example**
+```bash
+haskduw|SIGN_IN|nico
+haskduw
+```
+
 ---
 
 ### `SIGN_OUT` 
@@ -74,6 +80,12 @@ Signout of supplied username
 
 **Returns**
 - `<requestId>` - Request Id consisting of a 7-character lowercase string
+
+**Example**
+```bash
+lqkwidh|SIGN_OUT
+lqkwidh
+```
 
 ---
 
@@ -87,6 +99,11 @@ Return current username
 **Returns**
 - Active `username`
 
+**Example**
+```bash
+iqibalz|WHOAMI
+iqibalz|john
+```
 ---
 
 ### `CREATE_DISCUSSION` 
@@ -99,6 +116,12 @@ Create a new comment thread
 
 **Returns**
 - `<discussionId>` - Discussion thread identifier
+
+**Example**
+```bash
+pqjdbyx|CREATE_DISCUSSION|fghjkla.01|Hello everybody!
+pqjdbyx|ef95a0d5
+```
 
 ---
 
@@ -115,6 +138,12 @@ Return all messages on a discussion thread
 - `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
 - `(<username>|<comment>)[]` - Array of all messages with `username` and `comment`
 
+**Example**
+```bash
+bajkxuj|GET_DISCUSSION|ef95a0d5
+bajkxuj|ef95a0d5|fghjkla.01|(john|"Hello everybody!")
+```
+
 ---
 
 ### `CREATE_REPLY`
@@ -127,6 +156,12 @@ Append a reply to an existing discussion thread
 
 **Returns**
 - `<requestId>` - Request Id consisting of a 7-character lowercase string
+
+**Example**
+```bash
+hvbxnod|CREATE_REPLY|ef95a0d5|Hello back at you!
+hvbxnod
+```
 
 ---
 
@@ -142,6 +177,12 @@ Return all discussion threads and its messages
 - `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
 - `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
 - `(<username>|<comment>)[]` - Array of all messages with `username` and `comment`
+
+**Example**
+```bash
+bakxufh|LIST_DISCUSSIONS|fghjkla
+bakxufh|(72bdabe3|fghjkla.02|(john|"Hey there")),(ef95a0d5|fghjkla.01|(bob|"Hello back at you!",nico|"Hey team"))
+```
 
 ## 📝 License
 
