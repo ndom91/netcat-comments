@@ -13,7 +13,7 @@ export const Actions = {
 export const Table = {
   AUTH: "AUTH",
   DISCUSSION: "DISCUSSION",
-  COMMENT: "COMMENT"
+  DISCUSSION_REFERENCES: "DISCUSSION_REFERENCES"
 } as const
 
 const ActionSchemas = {
@@ -31,7 +31,6 @@ export const RequestBodySchema = v.object({
   action: v.enum_(Actions),
   data: v.nullable(v.optional(v.array(v.string()))),
   type: v.enum_(Table),
-  discussionId: v.optional(v.string([v.length(7), v.regex(/[a-zA-Z0-9]/)]))
 }, [
   v.forward(
     v.custom(({ action, data }) => {
@@ -48,12 +47,7 @@ export const RequestBodySchema = v.object({
 export type MessageBody = v.Output<typeof RequestBodySchema>
 
 export type Message = {
-  key: string,
-  data: MessageBody
-}
-
-export type ParsedBody = {
-  key: string,
+  userId: string,
   type: keyof typeof Table,
-  data: MessageBody
+  body: MessageBody
 }

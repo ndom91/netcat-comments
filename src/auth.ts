@@ -9,20 +9,20 @@ export class Authentication {
   #db: typeof db = db
 
   handleAction(parsedMessage: Message) {
-    switch (parsedMessage.data.action) {
+    switch (parsedMessage.body.action) {
       case Actions.SIGN_IN:
-        logger.debug('user.signIn', parsedMessage.data?.data?.[0]!)
+        logger.debug('user.signIn', parsedMessage.body?.data?.[0]!)
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
-        logger.debug('user.signOut', parsedMessage.data?.data?.[0]!)
-        if (!this.getUser(parsedMessage.key)) {
+        logger.debug('user.signOut', parsedMessage.body?.data?.[0]!)
+        if (!this.getUser(parsedMessage.userId)) {
           logger.debug('user.signOut', 'attempted without session.')
           return 'No session found.'
         }
         return this.signOut(parsedMessage);
       case Actions.WHOAMI:
-        logger.debug('user.whoami', parsedMessage.data?.data?.[0]!)
-        if (!this.getUser(parsedMessage.key)) {
+        logger.debug('user.whoami', parsedMessage.body?.data?.[0]!)
+        if (!this.getUser(parsedMessage.userId)) {
           logger.debug('user.whoami', 'attempted without session.')
           return 'No session found.'
         }
@@ -33,26 +33,26 @@ export class Authentication {
   }
 
   signIn(msg: Message) {
-    this.#db.insert(Table.AUTH, { key: msg.key, value: JSON.stringify(msg.data) })
-    return msg.data.requestId
+    this.#db.insert(Table.AUTH, { key: msg.userId, value: JSON.stringify(msg.body) })
+    return msg.body.requestId
   }
 
   signOut(msg: Message) {
-    const savedSession = this.#db.get(Table.AUTH, { key: msg.key })
+    const savedSession = this.#db.get(Table.AUTH, { key: msg.userId })
     if (!savedSession) {
       return 'No session found.'
     }
-    this.#db.delete(Table.AUTH, { key: msg.key })
-    return msg.data.requestId
+    this.#db.delete(Table.AUTH, { key: msg.userId })
+    return msg.body.requestId
   }
 
   whoami(msg: Message): string | undefined {
-    const savedSession = this.#db.get(Table.AUTH, { key: msg.key })
+    const savedSession = this.#db.get(Table.AUTH, { key: msg.userId })
     if (!savedSession) {
       return 'No session found.'
     }
     const savedMsg = JSON.parse(savedSession)
-    return `${msg.data.requestId}|${savedMsg?.data}`
+    return `${msg.body.requestId}|${savedMsg?.data}`
   }
 
   getUser(key: string): null | Record<string, string> {

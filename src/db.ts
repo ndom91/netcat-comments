@@ -13,7 +13,7 @@ export class MemoryDatabase {
     data = {
       [Table.AUTH]: new Map(),
       [Table.DISCUSSION]: new Map(),
-      [Table.COMMENT]: new Map()
+      [Table.DISCUSSION_REFERENCES]: new Map()
     }
     instance = this
   }
@@ -23,6 +23,17 @@ export class MemoryDatabase {
   }
   get(table: Table, { key }: { key: string }) {
     return data?.[table].get(key);
+  }
+  contains(table: Table, { query }: { query: string }) {
+    const matchingEntries = {}
+    data?.[table].forEach((val, key) => {
+      const referencePrefix = key.split('.')[0]
+      if (query === referencePrefix) {
+        // @ts-expect-error 
+        matchingEntries[key] = val
+      }
+    })
+    return matchingEntries
   }
   delete(table: Table, { key }: { key: string }) {
     data?.[table].delete(key);

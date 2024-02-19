@@ -1,12 +1,13 @@
 import net from "node:net";
-import { ValiError } from "valibot";
 import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
-import { Authentication } from "./auth";
-import { Comment } from "./comment";
-import { parseMessage } from "./utils";
-import { Logger, loggerLevels } from "./logger";
+
 import { Table } from "./types";
+import { Comment } from "./comment";
+import { ValiError } from "valibot";
+import { parseMessage } from "./utils";
+import { Authentication } from "./auth";
+import { Logger, loggerLevels } from "./logger";
 
 const logger = new Logger({ level: loggerLevels.DEBUG })
 
@@ -18,7 +19,7 @@ const server = net.createServer((socket) => {
     socket,
     async function*(source) {
       const ip = source.remoteAddress
-      logger.debug('connection.opened -', ip!)
+      logger.debug('connection.opened', ip!)
       for await (const chunk of source) {
         try {
           const msg = Buffer.from(chunk).toString().replace('\n', '')
@@ -27,11 +28,12 @@ const server = net.createServer((socket) => {
           let response
           if (parsedMessage.type === Table.AUTH) {
             response = auth.handleAction(parsedMessage)
-          } else if ([Table.DISCUSSION, Table.COMMENT].includes(parsedMessage.type)) {
+          } else if (parsedMessage.type === Table.DISCUSSION) {
             response = comment.handleAction(parsedMessage)
           }
           yield `${response}\n`
         } catch (e) {
+          logger.debug(String(e))
           if (e instanceof ValiError) {
             yield e.issues.map(issue => `Input "${issue.input}" invalid: ${issue.message}`).join('\n') + '\n'
           }
