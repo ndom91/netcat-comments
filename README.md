@@ -91,7 +91,7 @@ Return current username
 
 ### `CREATE_DISCUSSION` 
 
-Create a comment thread
+Create a new comment thread
 
 **Payload Arguments**
 - `<discussionUserReference>` - Discussion user reference consisting of a period delimited alphanumeric string, such as `b3hsbdf.1m30s`
@@ -103,6 +103,8 @@ Create a comment thread
 ---
 
 ### `GET_DISCUSSION`
+
+Return all messages on a discussion thread
 
 **Payload Arguments**
 - `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
@@ -117,6 +119,8 @@ Create a comment thread
 
 ### `CREATE_REPLY`
 
+Append a reply to an existing discussion thread
+
 **Payload Arguments**
 - `<discussionId>` - Discussion Id consisting of a 7-character alphanumeric string, like `dh7hs3b`
 - `<comment>` - Comment body
@@ -127,6 +131,8 @@ Create a comment thread
 ---
 
 ### `LIST_DISCUSSIONS`
+
+Return all discussion threads and its messages 
 
 **Payload Arguments**
 - `<commentReferencePrefix>` - First part of the period delimited reference, such as `b3hsbdf`
