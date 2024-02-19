@@ -1,7 +1,7 @@
-import { Actions, Table } from "./types"
 import { db } from "./db"
-import type { Message } from "./types"
+import { Actions, Table } from "./types"
 import { Logger, loggerLevels } from "./logger";
+import type { Message } from "./types"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 
@@ -15,9 +15,17 @@ export class Authentication {
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
         logger.debug('user.signOut', parsedMessage.data?.data?.[0]!)
+        if (!this.getUser(parsedMessage.key)) {
+          logger.debug('user.signOut', 'attempted without session.')
+          return 'No session found.'
+        }
         return this.signOut(parsedMessage);
       case Actions.WHOAMI:
         logger.debug('user.whoami', parsedMessage.data?.data?.[0]!)
+        if (!this.getUser(parsedMessage.key)) {
+          logger.debug('user.whoami', 'attempted without session.')
+          return 'No session found.'
+        }
         return this.whoami(parsedMessage);
       default:
         break;
@@ -45,5 +53,13 @@ export class Authentication {
     }
     const savedMsg = JSON.parse(savedSession)
     return `${msg.data.requestId}|${savedMsg?.data}`
+  }
+
+  getUser(key: string): null | Record<string, string> {
+    const session = this.#db.get(Table.AUTH, { key })
+    if (session) {
+      return JSON.parse(session)
+    }
+    return null
   }
 }
