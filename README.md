@@ -37,7 +37,7 @@ Messages sent to the system have the following syntax.
 <requestId>|<command>|<payload>
 ```
 
-- `requestId` - Unique 7 character string matching `/([a-zA-Z]{7})/`
+- `requestId` - Unique 7 character string matching `/([a-z]{7})/`
 - `command` - One of the available [commands](#%EF%B8%8F-commands)
 - `payload` - Command specific payload. If there are multiple fields, these will continue to be pipe (`|`) delimited.
 
