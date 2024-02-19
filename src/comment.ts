@@ -15,6 +15,8 @@ export class Comment {
     switch (parsedMessage.body.action) {
       case Actions.CREATE_DISCUSSION:
         logger.debug('discussion.create')
+
+        // Ensure user is logged in
         if (!auth.getUser(parsedMessage.userId)) {
           logger.debug('discussion.create', 'attempted without session.')
           return 'No session found.'
@@ -63,6 +65,8 @@ export class Comment {
         }]
       }
     }
+
+    // Save the discussion, but also a map of discussionId <=> discussionUserReferences
     this.#db.insert(Table.DISCUSSION_REFERENCES, { key: discussionUserReference, value: discussionId })
     this.#db.insert(Table.DISCUSSION, { key: discussionId, value: JSON.stringify(dbRecord) })
     return `${msg.body.requestId}|${discussionId}`
@@ -70,7 +74,10 @@ export class Comment {
 
   getDiscussion(msg: Message) {
     const discussionId = msg.body.data?.[0]
-    if (!discussionId) return "Missing discussionId"
+    if (!discussionId) {
+      return "Missing discussionId"
+    }
+
     const discussionData = this.#db.get(Table.DISCUSSION, { key: discussionId })
 
     if (!discussionData) {
@@ -78,6 +85,8 @@ export class Comment {
     }
 
     const discussion = JSON.parse(discussionData)
+
+    // Build return string of discussion messages
     const messagesString = discussion.data.messages.map((msg: { body: string, username: string }) => {
       return `${msg.username}|"${msg.body.replace(/"/g, '""')}"`
     }).join(',')
@@ -87,11 +96,13 @@ export class Comment {
   listDiscussions(msg: Message) {
     const discussionReference = msg.body.data?.[0] as string
 
+    // Look up discussionIds based on reference prefixes
     const discussionIds = this.#db.contains(Table.DISCUSSION_REFERENCES, { query: discussionReference })
     if (!discussionIds) {
       return "Couldn't find discussion based on the provided reference"
     }
 
+    // Fetch all discussion data based on array of discussionIds
     const discussionsData = Object
       .values(discussionIds)
       .map((discussionId) => {
@@ -108,6 +119,7 @@ export class Comment {
       return "Couldn't find discussion"
     }
 
+    // Build return string of discussions and their messages
     const discussionsReturnString = discussionsData.map((discussion) => {
       const { discussionUserReference: reference, discussionId: id, messages } = discussion.data
       const messagesString = messages.map((msg: { body: string, username: string }) => {
@@ -122,6 +134,7 @@ export class Comment {
   createReply(msg: Message) {
     const discussionId = msg.body.data?.[0] as string
     const replyMsg = msg.body.data?.[1] as string
+
     const discussionData = this.#db.get(Table.DISCUSSION, { key: discussionId })
     if (!discussionData) {
       return "Couldn't create reply"
@@ -132,6 +145,7 @@ export class Comment {
       body: replyMsg,
       username: auth.getUser(msg.userId)?.data[0]
     })
+
     this.#db.update(Table.DISCUSSION, { key: discussionId, value: JSON.stringify(discussion) })
     return msg.body.requestId
   }

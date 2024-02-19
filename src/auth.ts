@@ -57,9 +57,9 @@ export class Authentication {
 
   getUser(key: string): null | Record<string, string> {
     const session = this.#db.get(Table.AUTH, { key })
-    if (session) {
-      return JSON.parse(session)
+    if (!session) {
+      return null
     }
-    return null
+    return JSON.parse(session)
   }
 }

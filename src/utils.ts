@@ -58,7 +58,6 @@ export const parseMessage = (ip: string, bodyString: string): Message => {
   }
 }
 
-
 export const generateId = () => {
   return randomUUID().split('-')[0]
 }
