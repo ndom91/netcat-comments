@@ -14,14 +14,14 @@ export class Authentication {
         logger.debug('user.signIn', parsedMessage.body?.data?.[0]!)
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
-        logger.debug('user.signOut', parsedMessage.body?.data?.[0]!)
+        logger.debug('user.signOut')
         if (!this.getUser(parsedMessage.userId)) {
           logger.debug('user.signOut', 'attempted without session.')
           return 'No session found.'
         }
         return this.signOut(parsedMessage);
       case Actions.WHOAMI:
-        logger.debug('user.whoami', parsedMessage.body?.data?.[0]!)
+        logger.debug('user.whoami')
         if (!this.getUser(parsedMessage.userId)) {
           logger.debug('user.whoami', 'attempted without session.')
           return 'No session found.'

@@ -51,7 +51,10 @@ export const parseMessage = (ip: string, bodyString: string): Message => {
   const parsedBody = validateBody(rawBody)
 
   return {
-    // Key the user session by src IP address (?)
+    /*
+     * TODO: Find a better way to key the user session
+     * ngrok returns '127.0.0.1' for all users :/
+     */
     userId: createHash('sha256').update(ip).digest('hex'),
     type: parsedBody.type,
     body: parsedBody
