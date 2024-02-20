@@ -1,6 +1,7 @@
 import * as v from "valibot";
 import { randomUUID, createHash } from "node:crypto";
 import { Message, Table, Actions, RequestBodySchema } from "./types"
+import { Authentication } from "../auth";
 
 export const validateBody = (body: { requestId: string, action: string, data: string[], type: string }) => {
   return v.parse(RequestBodySchema, body);
@@ -63,4 +64,11 @@ export const parseMessage = (ip: string, bodyString: string): Message => {
 
 export const generateId = () => {
   return randomUUID().split('-')[0]
+}
+
+export const validateSession = (userId: string) => {
+  const auth = new Authentication()
+  if (!auth.getUser(userId)) {
+    throw new Error("No session found.")
+  }
 }

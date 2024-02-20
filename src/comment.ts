@@ -16,31 +16,23 @@ export class Comment {
         logger.debug('discussion.create')
 
         // Ensure user is logged in
-        if (!auth.getUser(parsedMessage.userId)) {
-          logger.debug('discussion.create', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.createDiscussion(parsedMessage);
       case Actions.GET_DISCUSSION:
         logger.debug('discussion.get', parsedMessage.body?.data?.[0]!)
-        if (!auth.getUser(parsedMessage.userId)) {
-          logger.debug('discussion.get', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.getDiscussion(parsedMessage);
       case Actions.LIST_DISCUSSIONS:
         logger.debug('discussion.list', parsedMessage.body?.data?.[0]!)
-        if (!auth.getUser(parsedMessage.userId)) {
-          logger.debug('discussion.list', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.listDiscussions(parsedMessage);
       case Actions.CREATE_REPLY:
         logger.debug('comment.create')
-        if (!auth.getUser(parsedMessage.userId)) {
-          logger.debug('comment.create', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.createReply(parsedMessage);
       default:
         break;

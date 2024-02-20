@@ -1,6 +1,7 @@
 import { db } from "./lib/db"
 import { Actions, Table, type Message } from "./lib/types"
 import { Logger, loggerLevels } from "./lib/logger";
+import { validateSession } from "./lib/utils";
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "AUTH" })
 
@@ -14,17 +15,13 @@ export class Authentication {
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
         logger.debug('user.signOut')
-        if (!this.getUser(parsedMessage.userId)) {
-          logger.debug('user.signOut', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.signOut(parsedMessage);
       case Actions.WHOAMI:
         logger.debug('user.whoami')
-        if (!this.getUser(parsedMessage.userId)) {
-          logger.debug('user.whoami', 'attempted without session.')
-          return 'No session found.'
-        }
+        validateSession(parsedMessage.userId)
+
         return this.whoami(parsedMessage);
       default:
         break;
