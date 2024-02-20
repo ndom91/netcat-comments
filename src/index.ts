@@ -5,9 +5,10 @@ import { ValiError } from "valibot";
 
 import { Table } from "./lib/types";
 import { Comment } from "./comment";
-import { parseMessage } from "./lib/utils";
+import { parseMessage, generateId } from "./lib/utils";
 import { Authentication } from "./auth";
 import { Logger, loggerLevels } from "./lib/logger";
+import { randomUUID } from "node:crypto"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "SERV" })
 
@@ -25,11 +26,12 @@ const server = net.createServer((socket) => {
       socket,
       async function*(source) {
         const ip = source.remoteAddress
-        logger.debug('connection.opened', ip!)
+        const userId = randomUUID()
+        logger.debug('connection.opened', ip!, userId)
         for await (const chunk of source) {
           try {
             const msg = Buffer.from(chunk).toString().replace('\n', '')
-            const parsedMessage = parseMessage(ip!, msg)
+            const parsedMessage = parseMessage(userId, msg)
 
             let response
             if (parsedMessage.type === Table.AUTH) {
@@ -38,8 +40,9 @@ const server = net.createServer((socket) => {
               response = comment.handleAction(parsedMessage)
             }
             yield `${response}\n`
-          } catch (e) {
+          } catch (e: any) {
             logger.debug(String(e))
+            yield `${e.message}\n`
             if (e instanceof ValiError) {
               yield e.issues.map(issue => `Input "${issue.input}" invalid: ${issue.message}`).join('\n') + '\n'
             }
