@@ -2,6 +2,7 @@ import { db } from "./lib/db"
 import { Logger, loggerLevels } from "./lib/logger";
 import { Authentication } from "./auth";
 import { generateId } from "./lib/utils";
+import { validateSession } from "./lib/utils";
 import { type Message, Table, Actions } from "./lib/types"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "DISC" })
@@ -13,24 +14,31 @@ export class Comment {
   handleAction(parsedMessage: Message) {
     switch (parsedMessage.body.action) {
       case Actions.CREATE_DISCUSSION:
-        logger.debug('discussion.create')
+        const [createDiscussionUserReference, createDiscussionMessage] = parsedMessage.body?.data!
+        logger.debug('discussion.create', createDiscussionUserReference, createDiscussionMessage)
 
         // Ensure user is logged in
         validateSession(parsedMessage.userId)
 
         return this.createDiscussion(parsedMessage);
       case Actions.GET_DISCUSSION:
-        logger.debug('discussion.get', parsedMessage.body?.data?.[0]!)
+        const [getDiscussionId] = parsedMessage.body?.data!
+        logger.debug('discussion.get', getDiscussionId)
+
         validateSession(parsedMessage.userId)
 
         return this.getDiscussion(parsedMessage);
       case Actions.LIST_DISCUSSIONS:
-        logger.debug('discussion.list', parsedMessage.body?.data?.[0]!)
+        const [listDiscussionUserReferencePrefix] = parsedMessage.body?.data!
+        logger.debug('discussion.list', listDiscussionUserReferencePrefix)
+
         validateSession(parsedMessage.userId)
 
         return this.listDiscussions(parsedMessage);
       case Actions.CREATE_REPLY:
-        logger.debug('comment.create')
+        const [createReplyDiscussionId, createReplyMessage] = parsedMessage.body?.data!
+        logger.debug('discussion.create_reply', createReplyDiscussionId, createReplyMessage)
+
         validateSession(parsedMessage.userId)
 
         return this.createReply(parsedMessage);
@@ -43,7 +51,8 @@ export class Comment {
     const discussionId = generateId()
     const user = auth.getUser(msg.userId)
 
-    const discussionUserReference = msg.body.data?.[0] as string
+    const [discussionUserReference] = msg.body.data!
+
     const dbRecord = {
       userId: msg.userId,
       type: msg.type,
@@ -64,7 +73,7 @@ export class Comment {
   }
 
   getDiscussion(msg: Message) {
-    const discussionId = msg.body.data?.[0]
+    const [discussionId] = msg.body.data!
     if (!discussionId) {
       return "Missing discussionId"
     }
@@ -85,10 +94,10 @@ export class Comment {
   }
 
   listDiscussions(msg: Message) {
-    const discussionReference = msg.body.data?.[0] as string
+    const [discussionReferencePrefix] = msg.body.data!
 
     // Look up discussionIds based on reference prefixes
-    const discussionIds = this.#db.contains(Table.DISCUSSION_REFERENCES, { query: discussionReference })
+    const discussionIds = this.#db.findByPrefix(Table.DISCUSSION_REFERENCES, { query: discussionReferencePrefix })
     if (!discussionIds) {
       return "Couldn't find discussion based on the provided reference"
     }
@@ -123,12 +132,11 @@ export class Comment {
   }
 
   createReply(msg: Message) {
-    const discussionId = msg.body.data?.[0] as string
-    const replyMsg = msg.body.data?.[1] as string
+    const [discussionId, replyMsg] = msg.body.data!
 
     const discussionData = this.#db.get(Table.DISCUSSION, { key: discussionId })
     if (!discussionData) {
-      return "Couldn't create reply"
+      return "Couldn't create reply, discussion doesn't exist"
     }
 
     const discussion = JSON.parse(discussionData)

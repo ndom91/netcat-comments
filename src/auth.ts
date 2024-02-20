@@ -1,5 +1,5 @@
 import { db } from "./lib/db"
-import { Actions, Table, type Message } from "./lib/types"
+import { type Message, Actions, Table } from "./lib/types"
 import { Logger, loggerLevels } from "./lib/logger";
 import { validateSession } from "./lib/utils";
 
@@ -11,7 +11,9 @@ export class Authentication {
   handleAction(parsedMessage: Message) {
     switch (parsedMessage.body.action) {
       case Actions.SIGN_IN:
-        logger.debug('user.signIn', parsedMessage.body?.data?.[0]!)
+        const [username] = parsedMessage.body?.data!
+        logger.debug('user.signIn', username)
+
         return this.signIn(parsedMessage);
       case Actions.SIGN_OUT:
         logger.debug('user.signOut')
