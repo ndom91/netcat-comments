@@ -1,9 +1,10 @@
 import { db } from "./lib/db"
 import { Logger, loggerLevels } from "./lib/logger";
-import { Authentication } from "./auth";
+import { Authentication, socketMap } from "./auth";
 import { generateId } from "./lib/utils";
 import { validateSession } from "./lib/utils";
-import { type Message, Table, Actions } from "./lib/types"
+import { Table, Actions } from "./lib/types"
+import type { Message, CommentData } from "./lib/types"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "DISC" })
 const auth = new Authentication()
@@ -49,7 +50,7 @@ export class Comment {
 
   createDiscussion(msg: Message) {
     const discussionId = generateId()
-    const user = auth.getUser(msg.userId)
+    const user = auth.getUserById(msg.userId)
 
     const [discussionUserReference] = msg.body.data!
 
@@ -61,6 +62,7 @@ export class Comment {
         discussionUserReference,
         messages: [{
           body: msg.body.data?.[1],
+          userId: msg.userId,
           username: user?.data[0]
         }]
       }
@@ -147,10 +149,59 @@ export class Comment {
     const discussion = JSON.parse(discussionData)
     discussion.data.messages.push({
       body: replyMsg,
-      username: auth.getUser(msg.userId)?.data[0]
+      userId: msg.userId,
+      username: auth.getUserById(msg.userId)?.data[0]
     })
 
     this.#db.update(Table.DISCUSSION, { key: discussionId, value: JSON.stringify(discussion) })
+    this.publishUpdates(msg.userId, discussionId)
     return msg.body.requestId
+  }
+
+  publishUpdates(sendingUserId: string, discussionId: string) {
+    const discussionData = this.#db.get(Table.DISCUSSION, { key: discussionId })
+    if (!discussionData) {
+      throw new Error("Cannot publish updates, discussion not found")
+    }
+    const discussion = JSON.parse(discussionData)
+
+    // Build userId list of members of the thread
+    const memberUserIds = new Set(discussion.data.messages
+      .map((msg: CommentData) => msg.userId)
+      .filter((userId: string) => userId !== sendingUserId)
+    )
+
+    // Build userId list of anyone mentioned in the thread
+    const mentionedUserIds = new Set(discussion.data.messages
+      // Loop over all messages
+      .map((msg: CommentData) => {
+        const matchedUsernames = msg.body.match(/@(\w){2,}/g)
+        if (matchedUsernames) {
+          // Loop over all mentions per message
+          return matchedUsernames
+            .map(username => {
+              const userId = auth.getUserByUsername(username)
+              return userId
+            })
+            .filter((userId) => {
+              // Filter out sending user
+              return userId !== sendingUserId
+            })
+        }
+      })
+      .flat()
+      .filter(Boolean)
+    )
+
+    // Merge userIds, leverage Sets again to dedupe lists
+    const userIds = new Set([...memberUserIds, ...mentionedUserIds])
+
+    // Publish updates to all subscribers
+    userIds.forEach((userId) => {
+      const socket = socketMap.get(userId)
+      if (socket) {
+        socket.write(`DISCUSSION_UPDATED|${discussionId}\n`)
+      }
+    })
   }
 }
