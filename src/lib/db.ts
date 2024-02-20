@@ -24,6 +24,9 @@ export class MemoryDatabase {
   get(table: Table, { key }: { key: string }) {
     return data?.[table].get(key);
   }
+  getAll(table: Table) {
+    return data?.[table]
+  }
   /*
    * Lookup entries by substring (prefix)
    */

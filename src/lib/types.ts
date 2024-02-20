@@ -63,3 +63,9 @@ export type Message = {
   type: keyof typeof Table,
   body: MessageBody
 }
+
+export type CommentData = {
+  userId: string,
+  username: string,
+  body: string
+}

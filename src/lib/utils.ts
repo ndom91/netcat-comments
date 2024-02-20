@@ -29,7 +29,7 @@ const getMessageType = (action: keyof typeof Actions) => {
  * Extract initial fields like requestId and classify action type
  * push the rest of the data into an array for later consumption.
  */
-export const parseMessage = (ip: string, bodyString: string): Message => {
+export const parseMessage = (userId: string, bodyString: string): Message => {
   const rawBody = bodyString.split("|").reduce((body, segment, i) => {
     if (!Object.values(body).includes(segment)) {
       if (i === 0) body.requestId = segment;
@@ -56,7 +56,7 @@ export const parseMessage = (ip: string, bodyString: string): Message => {
      * TODO: Find a better way to key the user session
      * ngrok returns '127.0.0.1' for all users :/
      */
-    userId: createHash('sha256').update(ip).digest('hex'),
+    userId,
     type: parsedBody.type,
     body: parsedBody
   }
@@ -68,7 +68,7 @@ export const generateId = () => {
 
 export const validateSession = (userId: string) => {
   const auth = new Authentication()
-  if (!auth.getUser(userId)) {
+  if (!auth.getUserById(userId)) {
     throw new Error("No session found.")
   }
 }
