@@ -1,7 +1,10 @@
 import * as v from "valibot";
-import { randomUUID, createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { Message, Table, Actions, RequestBodySchema } from "./types"
 import { Authentication } from "../auth";
+
+type AuthAction = Extract<keyof typeof Actions, "SIGN_IN" | "WHOAMI" | "SIGN_OUT">
+type DiscussionAction = Extract<keyof typeof Actions, "CREATE_REPLY" | "CREATE_DISCUSSION" | "GET_DISCUSSION" | "LIST_DISCUSSIONS">
 
 export const validateBody = (body: { requestId: string, action: string, data: string[], type: string }) => {
   return v.parse(RequestBodySchema, body);
@@ -15,11 +18,9 @@ const getMessageType = (action: keyof typeof Actions) => {
   const discussionActions = [Actions.CREATE_REPLY, Actions.CREATE_DISCUSSION, Actions.GET_DISCUSSION, Actions.LIST_DISCUSSIONS]
 
   // check if action is part of either group
-  // @ts-expect-error needs to be clarified
-  if (authActions.includes(action)) {
+  if (authActions.includes(action as AuthAction)) {
     return Table.AUTH;
-    // @ts-expect-error needs to be clarified
-  } else if (discussionActions.includes(action)) {
+  } else if (discussionActions.includes(action as DiscussionAction)) {
     return Table.DISCUSSION;
   }
 }
@@ -52,16 +53,15 @@ export const parseMessage = (userId: string, bodyString: string): Message => {
   const parsedBody = validateBody(rawBody)
 
   return {
-    /*
-     * TODO: Find a better way to key the user session
-     * ngrok returns '127.0.0.1' for all users :/
-     */
     userId,
     type: parsedBody.type,
     body: parsedBody
   }
 }
 
+/*
+ * Generate 7 character alphanumeric id
+ */
 export const generateId = () => {
   return randomUUID().split('-')[0]
 }

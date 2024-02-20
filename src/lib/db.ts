@@ -27,9 +27,7 @@ export class MemoryDatabase {
   getAll(table: Table) {
     return data?.[table]
   }
-  /*
-   * Lookup entries by substring (prefix)
-   */
+  // Lookup entries by substring (prefix)
   findByPrefix(table: Table, { query }: { query: string }) {
     const matchingEntries = {}
     data?.[table].forEach((val, key) => {
