@@ -2,13 +2,13 @@ import net from "node:net";
 import { Buffer } from "node:buffer";
 import { pipeline } from "node:stream/promises"
 import { ValiError } from "valibot";
+import { randomUUID } from "node:crypto"
 
 import { Table } from "./lib/types";
 import { Comment } from "./comment";
-import { parseMessage, generateId } from "./lib/utils";
+import { parseMessage } from "./lib/utils";
 import { Authentication } from "./auth";
 import { Logger, loggerLevels } from "./lib/logger";
-import { randomUUID } from "node:crypto"
 
 const logger = new Logger({ level: loggerLevels.DEBUG, prefix: "SERV" })
 
@@ -17,10 +17,11 @@ const server = net.createServer((socket) => {
   const comment = new Comment()
 
   try {
-    /* Stream Pipeline to handle the data
-     * - Handle input from the tcp socket,
-     * - Pass it onto an async generator to handle/transform the data
-     * - Send it back out of the socket to the recipient
+    /* 
+     * Stream pipeline to handle data
+     * - Take input from the tcp socket,
+     * - Pass it onto a generator to handle/transform the data
+     * - Yield back out any responses to the same socket
      */
     pipeline(
       socket,
@@ -35,7 +36,7 @@ const server = net.createServer((socket) => {
 
             let response
             if (parsedMessage.type === Table.AUTH) {
-              response = auth.handleAction(parsedMessage)
+              response = auth.handleAction(parsedMessage, source)
             } else if (parsedMessage.type === Table.DISCUSSION) {
               response = comment.handleAction(parsedMessage)
             }
