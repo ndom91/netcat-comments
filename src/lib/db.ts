@@ -27,10 +27,10 @@ export class MemoryDatabase {
   /*
    * Lookup entries by substring (prefix)
    */
-  contains(table: Table, { query }: { query: string }) {
+  findByPrefix(table: Table, { query }: { query: string }) {
     const matchingEntries = {}
     data?.[table].forEach((val, key) => {
-      const referencePrefix = key.split('.')[0]
+      const [referencePrefix] = key.split('.')
       if (referencePrefix && query === referencePrefix) {
         // @ts-expect-error 
         matchingEntries[key] = val
