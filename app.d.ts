@@ -1,1 +1,1 @@
-type TODO = any;
+type TODO = any

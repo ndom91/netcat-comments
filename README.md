@@ -1,4 +1,4 @@
-<img title="Dall-E 3 Logo" align="right" width="300px" src="logo2.svg" alt="Netcat Comments Logo" />
+<img title="Dall-E 3 Logo" align="right" width="300px" src="logo.svg" alt="Netcat Comments Logo" />
 
 # Netcat Comments
 

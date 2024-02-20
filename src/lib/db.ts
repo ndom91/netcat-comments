@@ -13,16 +13,16 @@ export class MemoryDatabase {
     data = {
       [Table.AUTH]: new Map(),
       [Table.DISCUSSION]: new Map(),
-      [Table.DISCUSSION_REFERENCES]: new Map()
+      [Table.DISCUSSION_REFERENCES]: new Map(),
     }
     instance = this
   }
-  insert(table: Table, { key, value }: { key: string, value: string }) {
-    data?.[table].set(key, value);
+  insert(table: Table, { key, value }: { key: string; value: string }) {
+    data?.[table].set(key, value)
     return key
   }
   get(table: Table, { key }: { key: string }) {
-    return data?.[table].get(key);
+    return data?.[table].get(key)
   }
   getAll(table: Table) {
     return data?.[table]
@@ -31,19 +31,19 @@ export class MemoryDatabase {
   findByPrefix(table: Table, { query }: { query: string }) {
     const matchingEntries = {}
     data?.[table].forEach((val, key) => {
-      const [referencePrefix] = key.split('.')
+      const [referencePrefix] = key.split(".")
       if (referencePrefix && query === referencePrefix) {
-        // @ts-expect-error 
+        // @ts-expect-error
         matchingEntries[key] = val
       }
     })
     return matchingEntries
   }
   delete(table: Table, { key }: { key: string }) {
-    data?.[table].delete(key);
+    data?.[table].delete(key)
   }
-  update(table: Table, { key, value }: { key: string, value: string }) {
-    data?.[table].set(key, value);
+  update(table: Table, { key, value }: { key: string; value: string }) {
+    data?.[table].set(key, value)
     return key
   }
 }

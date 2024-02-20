@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "noEmit": true,
     "types": [
-      "app.d.ts",
+      "./app.d.ts",
       "node"
     ],
     "resolveJsonModule": true,
