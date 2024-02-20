@@ -88,7 +88,10 @@ export class Comment {
 
     // Build return string of discussion messages
     const messagesString = discussion.data.messages.map((msg: { body: string, username: string }) => {
-      return `${msg.username}|"${msg.body.replace(/"/g, '""')}"`
+      const msgBodyString = msg.body.includes(",")
+        ? `"${msg.body.replace(/"/g, '""')}"`
+        : `${msg.body.replace(/"/g, '""')}`
+      return `${msg.username}|${msgBodyString}`
     }).join(',')
     return `${msg.body.requestId}|${discussionId}|${discussion.data.discussionUserReference}|(${messagesString})`
   }
@@ -113,7 +116,6 @@ export class Comment {
         return null
       })
       .filter(Boolean)
-      .reverse()
 
     if (!discussionsData) {
       return "Couldn't find discussion"
@@ -123,12 +125,15 @@ export class Comment {
     const discussionsReturnString = discussionsData.map((discussion) => {
       const { discussionUserReference: reference, discussionId: id, messages } = discussion.data
       const messagesString = messages.map((msg: { body: string, username: string }) => {
-        return `${msg.username}|"${msg.body.replace(/"/g, '""')}"`
+        const msgBodyString = msg.body.includes(",")
+          ? `"${msg.body.replace(/"/g, '""')}"`
+          : `${msg.body.replace(/"/g, '""')}`
+        return `${msg.username}|${msgBodyString}`
       }).join(',')
-      return `(${id}|${reference}|(${messagesString}))`
+      return `${id}|${reference}|(${messagesString})`
     })
 
-    return `${msg.body.requestId}|${discussionsReturnString}`
+    return `${msg.body.requestId}|(${discussionsReturnString})`
   }
 
   createReply(msg: Message) {
